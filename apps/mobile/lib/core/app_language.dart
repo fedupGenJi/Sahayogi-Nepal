@@ -57,6 +57,7 @@ class AppLanguageToggle extends StatelessWidget {
           style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
         ),
       );
+}
 
 const _nepali = <String, String>{
   'Request Help': 'सहयोग माग्नुहोस्',
@@ -118,6 +119,17 @@ const _nepali = <String, String>{
   'Temporary Shelter': 'अस्थायी आश्रय',
   'Temporary shelter': 'अस्थायी आश्रय',
   'AI fill form': 'AI बाट फाराम भर्नुहोस्',
+  'Voice AI help': 'आवाजबाट AI सहायता',
+  'Tap the microphone and describe what you need.': 'माइक्रोफोन थिचेर आफूलाई चाहिएको कुरा भन्नुहोस्।',
+  'Listening…': 'सुन्दैछ…',
+  'Recording…': 'रेकर्ड हुँदैछ…',
+  'Tap to speak': 'बोल्न थिच्नुहोस्',
+  'Speech recognition is unavailable on this device.': 'यो उपकरणमा आवाज पहिचान उपलब्ध छैन।',
+  'No speech was recognized. Please try again.': 'आवाज पहिचान भएन। फेरि प्रयास गर्नुहोस्।',
+  'Speak suggestions': 'सुझावहरू सुनाउनुहोस्',
+  'Record answer': 'जवाफ रेकर्ड गर्नुहोस्',
+  'Stop and send': 'रोक्नुहोस् र पठाउनुहोस्',
+  'Try again': 'फेरि प्रयास गर्नुहोस्',
   'Describe what you need in English, नेपाली, or both.': 'आफूलाई चाहिएको कुरा English, नेपाली वा दुवै भाषामा लेख्नुहोस्।',
   'Describe what you can donate in English, नेपाली, or both.': 'तपाईंले दिन सक्ने कुरा English, नेपाली वा दुवै भाषामा लेख्नुहोस्।',
   'Describe the assistance needed in English, नेपाली, or both.': 'आवश्यक सहायता English, नेपाली वा दुवै भाषामा लेख्नुहोस्।',
