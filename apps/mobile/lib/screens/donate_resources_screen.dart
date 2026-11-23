@@ -3,9 +3,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/app_colors.dart';
+import '../core/app_language.dart';
 import '../core/api.dart';
 import '../core/request_submission.dart';
 import '../core/volunteer_auth_service.dart';
+import '../widgets/form_assistant.dart';
 import 'explore_screen.dart';
 import 'location_picker_screen.dart';
 import 'my_requests_screen.dart';
@@ -175,7 +177,7 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
             ...values.map(
               (value) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(value),
+                title: Text(appText(value)),
                 trailing: value == selectedValue
                     ? const Icon(Icons.check_rounded, color: appTeal)
                     : null,
@@ -187,6 +189,33 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
       ),
     );
     if (selected != null && mounted) onSelected(selected);
+  }
+
+  void _applyFormSuggestions(Map<String, dynamic> values) {
+    setState(() {
+      final name = values['requester_name']?.toString() ?? '';
+      final phone = values['requester_phone']?.toString() ?? '';
+      if (name.isNotEmpty) _donorNameController.text = name;
+      if (phone.isNotEmpty) _contactController.text = phone;
+      final items = values['items'];
+      if (items is List && items.isNotEmpty) {
+        for (final controller in _quantityControllers) {
+          controller.dispose();
+        }
+        _quantityControllers
+          ..clear()
+          ..addAll(items.map((_) => TextEditingController()));
+        _categories
+          ..clear()
+          ..addAll(items.map((item) => item['category'] as String?));
+        _categoryErrors
+          ..clear()
+          ..addAll(List<bool>.filled(items.length, false));
+        for (var index = 0; index < items.length; index++) {
+          _quantityControllers[index].text = '${items[index]['quantity']}';
+        }
+      }
+    });
   }
 
   Future<void> _submitDonation() async {
@@ -231,7 +260,9 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => ValueListenableBuilder<AppLanguage>(
+        valueListenable: AppLanguageController.language,
+        builder: (context, language, child) => Scaffold(
         backgroundColor: appPaper,
         body: SafeArea(
           bottom: false,
@@ -250,16 +281,17 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                         icon: const Icon(Icons.arrow_back_rounded),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Donate resources',
-                          style: TextStyle(
+                          appText('Donate resources'),
+                          style: const TextStyle(
                             color: appNavy,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
+                      const AppLanguageToggle(),
                       const Icon(
                         Icons.verified_user_outlined,
                         color: appTeal,
@@ -268,8 +300,8 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'What can you share?',
+                  Text(
+                    appText('What can you share?'),
                     style: TextStyle(
                       color: appNavy,
                       fontSize: 24,
@@ -278,6 +310,12 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  FormAssistantButton(
+                    formType: 'donation_offer',
+                    prompt: appText('Describe what you can donate in English, नेपाली, or both.'),
+                    onApply: _applyFormSuggestions,
+                  ),
+                  const SizedBox(height: 20),
                   ...List.generate(
                     _categories.length,
                     (index) => Padding(
@@ -319,9 +357,9 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                           ),
                           if (_categoryErrors[index]) ...[
                             const SizedBox(height: 6),
-                            const Text(
-                              'Choose a resource category.',
-                              style: TextStyle(
+                            Text(
+                              appText('Choose a resource category.'),
+                              style: const TextStyle(
                                 color: Colors.redAccent,
                                 fontSize: 11,
                               ),
@@ -359,9 +397,9 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       icon: const Icon(Icons.add_rounded, size: 20),
-                      label: const Text(
-                        'Add another resource',
-                        style: TextStyle(
+                      label: Text(
+                        appText('Add another resource'),
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -404,9 +442,9 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                       icon:
                           const Icon(Icons.add_location_alt_outlined, size: 18),
                       label: Text(
-                        _location == null
+                        appText(_location == null
                             ? 'Choose location'
-                            : 'Change location',
+                            : 'Change location'),
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -417,15 +455,15 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                   if (_location != null) ...[
                     const SizedBox(height: 7),
                     Text(
-                      'Pickup selected: ${_location!.latitude.toStringAsFixed(5)}, ${_location!.longitude.toStringAsFixed(5)}',
+                      '${appText('Pickup selected:')} ${_location!.latitude.toStringAsFixed(5)}, ${_location!.longitude.toStringAsFixed(5)}',
                       style: const TextStyle(color: appMuted, fontSize: 11),
                     ),
                   ],
                   if (_locationError) ...[
                     const SizedBox(height: 6),
-                    const Text(
-                      'Choose a pickup location.',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 11),
+                    Text(
+                      appText('Choose a pickup location.'),
+                      style: const TextStyle(color: Colors.redAccent, fontSize: 11),
                     ),
                   ],
                   const SizedBox(height: 20),
@@ -451,8 +489,8 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
                     height: 52,
                     child: FilledButton(
                       onPressed: _isSubmitting ? null : _submitDonation,
-                      child: Text(
-                          _isSubmitting ? 'Submitting…' : 'Share resources'),
+                      child: Text(appText(
+                          _isSubmitting ? 'Submitting…' : 'Share resources')),
                     ),
                   ),
                 ],
@@ -461,10 +499,10 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
           ),
         ),
         bottomNavigationBar: _donationNavigationBar(context),
-      );
+      ));
 
   Widget _fieldLabel(String text) => Text(
-        text,
+        appText(text),
         style: const TextStyle(
           color: Color(0xFF263746),
           fontSize: 12,
@@ -497,7 +535,7 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    value,
+                    appText(value),
                     style: const TextStyle(color: appMuted, fontSize: 14),
                   ),
                 ),
@@ -520,7 +558,7 @@ class _DonateResourcesScreenState extends State<DonateResourcesScreen> {
         validator: validator,
         style: const TextStyle(color: appNavy, fontSize: 14),
         decoration: InputDecoration(
-          hintText: hint,
+          hintText: appText(hint),
           hintStyle: const TextStyle(color: appMuted, fontSize: 13),
           filled: true,
           fillColor: Colors.white,
@@ -566,7 +604,7 @@ Widget _donationNavigationBar(BuildContext context) => Container(
             children: [
               _DonationNavigationItem(
                 icon: Icons.home_outlined,
-                label: 'Home',
+                label: appText('Home'),
                 selected: true,
                 onTap: () => Navigator.of(context).popUntil(
                   (route) => route.isFirst,
@@ -574,7 +612,7 @@ Widget _donationNavigationBar(BuildContext context) => Container(
               ),
               _DonationNavigationItem(
                 icon: Icons.map_outlined,
-                label: 'Explore',
+                label: appText('Explore'),
                 selected: false,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -584,7 +622,7 @@ Widget _donationNavigationBar(BuildContext context) => Container(
               ),
               _DonationNavigationItem(
                 icon: Icons.inventory_2_outlined,
-                label: 'Requests',
+                label: appText('Requests'),
                 selected: false,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -594,7 +632,7 @@ Widget _donationNavigationBar(BuildContext context) => Container(
               ),
               _DonationNavigationItem(
                 icon: Icons.person_outline_rounded,
-                label: VolunteerAuthService.hasSession ? 'Profile' : 'Join',
+                label: appText(VolunteerAuthService.hasSession ? 'Profile' : 'Join'),
                 selected: false,
                 onTap: () => openVolunteerLogin(context),
               ),

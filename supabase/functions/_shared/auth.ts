@@ -84,7 +84,7 @@ export async function requireAdmin(req: Request) {
   return p && p.role === "admin" ? { id: p.id } : null;
 }
 
-export type ThrottleKind = "login" | "reset" | "apply" | "upload" | "otp_send" | "otp_verify"| "status_check";
+export type ThrottleKind = "login" | "reset" | "apply" | "upload" | "otp_send" | "otp_verify"| "status_check" | "form_ai";
 
 export async function tooMany(
   sb: ReturnType<typeof adminClient>,

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/app_colors.dart';
+import 'core/app_language.dart';
 import 'core/config.dart';
 import 'screens/startup_screen.dart';
 
@@ -12,6 +13,7 @@ Future<void> main() async {
     url: Config.supabaseUrl,
     publishableKey: Config.supabaseAnonKey,
   );
+  await AppLanguageController.load();
   runApp(const ProviderScope(child: SahayogiApp()));
 }
 
@@ -19,7 +21,9 @@ class SahayogiApp extends StatelessWidget {
   const SahayogiApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
+  Widget build(BuildContext context) => ValueListenableBuilder<AppLanguage>(
+      valueListenable: AppLanguageController.language,
+      builder: (context, language, child) => MaterialApp(
         title: 'Sahayogi Nepal',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -139,5 +143,5 @@ class SahayogiApp extends StatelessWidget {
           ),
         ),
         home: const StartupScreen(),
-      );
+      ));
 }

@@ -16,7 +16,10 @@ port = 54324
 
 [auth]
 site_url = "http://localhost:5173"
-additional_redirect_urls = ["http://localhost:5173/set-password/"]
+additional_redirect_urls = [
+  "http://localhost:5173/set-password/",
+  "https://fedupgenji.github.io/Sahayogi-Nepal/set-password/",
+]
 enable_signup = false
 enable_anonymous_sign_ins = false
 jwt_expiry = 3600
@@ -51,6 +54,8 @@ content_path = "./supabase/templates/recovery.html"
 file_size_limit = "5MiB"
 
 [functions.submit-request]
+verify_jwt = false
+[functions.assist-form]
 verify_jwt = false
 [functions.admin-login]
 verify_jwt = false

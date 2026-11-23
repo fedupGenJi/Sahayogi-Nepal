@@ -509,4 +509,57 @@ class Api {
       return ApiResult(errorCode: 'network', errorMessage: e.toString());
     }
   }
+
+  /// Sends a description to the constrained server-side form assistant. The
+  /// function returns values only; it cannot submit requests or edit layout.
+  static Future<ApiResult<Map<String, dynamic>>> assistForm({
+    required String formType,
+    required String message,
+  }) async {
+    try {
+      final response = await _sb.functions.invoke(
+        'assist-form',
+        body: {
+          'form_type': formType,
+          'message': message,
+        },
+      );
+      final envelope = response.data is Map
+          ? Map<String, dynamic>.from(response.data as Map)
+          : <String, dynamic>{};
+      final rawError = envelope['error'];
+      if (rawError is Map) {
+        final error = Map<String, dynamic>.from(rawError);
+        return ApiResult(
+          errorCode: error['code']?.toString() ?? 'assistant_failed',
+          errorMessage: error['message']?.toString() ??
+              'Could not prepare suggestions.',
+        );
+      }
+      final rawData = envelope['data'];
+      if (rawData is! Map || rawData['suggestions'] is! Map) {
+        return const ApiResult(
+          errorCode: 'invalid_response',
+          errorMessage: 'The assistant returned an unexpected response.',
+        );
+      }
+      return ApiResult(data: Map<String, dynamic>.from(rawData));
+    } on FunctionException catch (error) {
+      final details = error.details;
+      final envelope = details is Map
+          ? Map<String, dynamic>.from(details)
+          : <String, dynamic>{};
+      final rawError = envelope['error'];
+      final body = rawError is Map
+          ? Map<String, dynamic>.from(rawError)
+          : <String, dynamic>{};
+      return ApiResult(
+        errorCode: body['code']?.toString() ?? 'assistant_failed',
+        errorMessage:
+            body['message']?.toString() ?? 'Could not prepare suggestions.',
+      );
+    } catch (error) {
+      return ApiResult(errorCode: 'network', errorMessage: error.toString());
+    }
+  }
 }

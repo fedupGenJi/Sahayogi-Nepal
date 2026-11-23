@@ -3,9 +3,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/app_colors.dart';
+import '../core/app_language.dart';
 import '../core/api.dart';
 import '../core/request_submission.dart';
 import '../core/volunteer_auth_service.dart';
+import '../widgets/form_assistant.dart';
 import 'explore_screen.dart';
 import 'location_picker_screen.dart';
 import 'my_requests_screen.dart';
@@ -175,7 +177,7 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
             ...values.map(
               (value) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(value),
+                title: Text(appText(value)),
                 trailing: value == selectedValue
                     ? const Icon(Icons.check_rounded, color: appTeal)
                     : null,
@@ -193,6 +195,24 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
     final number = int.tryParse(value?.trim() ?? '');
     if (number == null || number < 1) return 'Enter a valid $fieldName';
     return null;
+  }
+
+  void _applyFormSuggestions(Map<String, dynamic> values) {
+    setState(() {
+      final name = values['requester_name']?.toString() ?? '';
+      final phone = values['requester_phone']?.toString() ?? '';
+      if (name.isNotEmpty) _requesterNameController.text = name;
+      if (phone.isNotEmpty) _contactController.text = phone;
+      if (values['affected_people'] != null) {
+        _affectedPeopleController.text = '${values['affected_people']}';
+      }
+      if (values['assistance_type'] is String) {
+        _assistanceTypes[0] = values['assistance_type'] as String;
+      }
+      if (values['volunteers_needed'] != null) {
+        _numberControllers[0].text = '${values['volunteers_needed']}';
+      }
+    });
   }
 
   Future<void> _submitRequest() async {
@@ -243,7 +263,9 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => ValueListenableBuilder<AppLanguage>(
+        valueListenable: AppLanguageController.language,
+        builder: (context, language, child) => Scaffold(
         backgroundColor: appPaper,
         body: SafeArea(
           bottom: false,
@@ -262,16 +284,17 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                         icon: const Icon(Icons.arrow_back_rounded),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Request Assistance',
-                          style: TextStyle(
+                          appText('Request assistance'),
+                          style: const TextStyle(
                             color: appNavy,
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
+                      const AppLanguageToggle(),
                       const Icon(
                         Icons.verified_user_outlined,
                         color: appTeal,
@@ -280,8 +303,8 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
-                    'What kind of human\nassistance do you need?',
+                  Text(
+                    appText('What kind of human\nassistance do you need?'),
                     style: TextStyle(
                       color: appNavy,
                       fontSize: 24,
@@ -290,6 +313,12 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  FormAssistantButton(
+                    formType: 'health',
+                    prompt: appText('Describe the assistance needed in English, नेपाली, or both.'),
+                    onApply: _applyFormSuggestions,
+                  ),
+                  const SizedBox(height: 20),
                   _fieldLabel('Contact number'),
                   const SizedBox(height: 8),
                   _textField(
@@ -350,9 +379,9 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                           ),
                           if (_typeErrors[index]) ...[
                             const SizedBox(height: 6),
-                            const Text(
-                              'Choose an assistance type.',
-                              style: TextStyle(
+                            Text(
+                              appText('Choose an assistance type.'),
+                              style: const TextStyle(
                                 color: Colors.redAccent,
                                 fontSize: 11,
                               ),
@@ -384,9 +413,9 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       icon: const Icon(Icons.add_rounded, size: 20),
-                      label: const Text(
-                        'Add another assistance type',
-                        style: TextStyle(
+                      label: Text(
+                        appText('Add another assistance type'),
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -394,18 +423,18 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Text(
-                    'Food · Drinking Water · Medicine\nClothing · Temporary Shelter',
-                    style: TextStyle(
+                  Text(
+                    appText('Food · Drinking Water · Medicine\nClothing · Temporary Shelter'),
+                    style: const TextStyle(
                       color: appMuted,
                       fontSize: 12,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 22),
-                  const Text(
-                    'Where is help needed?',
-                    style: TextStyle(
+                  Text(
+                    appText('Where is help needed?'),
+                    style: const TextStyle(
                       color: appNavy,
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -434,9 +463,9 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                   ),
                   if (_locationError) ...[
                     const SizedBox(height: 6),
-                    const Text(
-                      'Choose a location for the request.',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 11),
+                    Text(
+                      appText('Choose a location for the request.'),
+                      style: const TextStyle(color: Colors.redAccent, fontSize: 11),
                     ),
                   ],
                   const SizedBox(height: 18),
@@ -455,8 +484,8 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                     height: 52,
                     child: FilledButton(
                       onPressed: _isSubmitting ? null : _submitRequest,
-                      child: Text(
-                          _isSubmitting ? 'Submitting…' : 'Submit request'),
+                      child: Text(appText(
+                          _isSubmitting ? 'Submitting…' : 'Submit request')),
                     ),
                   ),
                 ],
@@ -465,10 +494,10 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
           ),
         ),
         bottomNavigationBar: _assistanceNavigationBar(context),
-      );
+      ));
 
   Widget _fieldLabel(String text) => Text(
-        text,
+        appText(text),
         style: const TextStyle(
           color: Color(0xFF263746),
           fontSize: 12,
@@ -506,7 +535,7 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
                 ],
                 Expanded(
                   child: Text(
-                    value,
+                    appText(value),
                     style: const TextStyle(color: appMuted, fontSize: 14),
                   ),
                 ),
@@ -528,7 +557,7 @@ class _RequestAssistanceScreenState extends State<RequestAssistanceScreen> {
         validator: validator,
         style: const TextStyle(color: appNavy, fontSize: 14),
         decoration: InputDecoration(
-          hintText: hint,
+          hintText: appText(hint),
           hintStyle: const TextStyle(color: appMuted, fontSize: 13),
           filled: true,
           fillColor: Colors.white,
@@ -573,7 +602,7 @@ Widget _assistanceNavigationBar(BuildContext context) => Container(
             children: [
               _AssistanceNavigationItem(
                 icon: Icons.home_outlined,
-                label: 'Home',
+                label: appText('Home'),
                 selected: false,
                 onTap: () => Navigator.of(context).popUntil(
                   (route) => route.isFirst,
@@ -581,7 +610,7 @@ Widget _assistanceNavigationBar(BuildContext context) => Container(
               ),
               _AssistanceNavigationItem(
                 icon: Icons.map_outlined,
-                label: 'Explore',
+                label: appText('Explore'),
                 selected: false,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -591,7 +620,7 @@ Widget _assistanceNavigationBar(BuildContext context) => Container(
               ),
               _AssistanceNavigationItem(
                 icon: Icons.inventory_2_outlined,
-                label: 'Requests',
+                label: appText('Requests'),
                 selected: true,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
@@ -601,7 +630,7 @@ Widget _assistanceNavigationBar(BuildContext context) => Container(
               ),
               _AssistanceNavigationItem(
                 icon: Icons.person_outline_rounded,
-                label: VolunteerAuthService.hasSession ? 'Profile' : 'Join',
+                label: appText(VolunteerAuthService.hasSession ? 'Profile' : 'Join'),
                 selected: false,
                 onTap: () => openVolunteerLogin(context),
               ),

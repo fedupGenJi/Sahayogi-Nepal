@@ -1,5 +1,5 @@
 window.SAHAYOGI_CONFIG = {
-  SUPABASE_URL: "https://gtehciwxxiovriymogpa.supabase.co",
-  SUPABASE_ANON_KEY: "sb_publishable_zF1QFOkQG-kqe-cJld6RGA_gB9TVdAV",
+  SUPABASE_URL: "https://zttpmbxktwyriwtjlenm.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_VxqApoHCGmu7VDmE9akq4Q_AZw_MWjl",
   ADMIN_LOGIN_URL: "",
 };

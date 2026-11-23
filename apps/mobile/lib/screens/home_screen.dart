@@ -2,6 +2,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../core/app_colors.dart';
+import '../core/app_language.dart';
 import '../core/volunteer_auth_service.dart';
 import 'explore_screen.dart';
 import 'donate_resources_screen.dart';
@@ -67,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) => ValueListenableBuilder<AppLanguage>(
+        valueListenable: AppLanguageController.language,
+        builder: (context, language, child) => Scaffold(
         backgroundColor: appPaper,
         body: SafeArea(
           bottom: false,
@@ -86,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: _bottomNavigation(),
-      );
+      ));
 
   Widget _brandHeader() => Row(
         children: [
@@ -101,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+          const AppLanguageToggle(),
           IconButton(
             onPressed: _showComingSoon,
             tooltip: 'Notifications',
@@ -140,8 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              'You’re not alone.\nLet’s find you support.',
+            Text(
+              appText('You’re not alone.\nLet’s find you support.'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -165,11 +169,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Request Help',
+                      appText('Request Help'),
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                     SizedBox(width: 10),
@@ -187,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: _ActionCard(
               icon: Icons.inventory_2_outlined,
-              label: 'Request\nAssistance',
+              label: appText('Request\nAssistance'),
               onTap: _openRequestAssistance,
             ),
           ),
@@ -195,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: _ActionCard(
               icon: Icons.favorite_border_rounded,
-              label: 'Donate\nResources',
+              label: appText('Donate\nResources'),
               onTap: _openDonateResources,
             ),
           ),
@@ -203,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: _ActionCard(
               icon: Icons.people_outline_rounded,
-              label: 'Become a\nVolunteer',
+              label: appText('Become a\nVolunteer'),
               onTap: _openVolunteerLogin,
             ),
           ),
@@ -223,25 +227,25 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 _NavigationItem(
                   icon: Icons.home_outlined,
-                  label: 'Home',
+                  label: appText('Home'),
                   selected: _selectedTab == 0,
                   onTap: () => setState(() => _selectedTab = 0),
                 ),
                 _NavigationItem(
                   icon: Icons.map_outlined,
-                  label: 'Explore',
+                  label: appText('Explore'),
                   selected: _selectedTab == 1,
                   onTap: _openExplore,
                 ),
                 _NavigationItem(
                   icon: Icons.inventory_2_outlined,
-                  label: 'Requests',
+                  label: appText('Requests'),
                   selected: _selectedTab == 2,
                   onTap: _openMyRequests,
                 ),
                 _NavigationItem(
                   icon: Icons.person_outline_rounded,
-                  label: VolunteerAuthService.hasSession ? 'Profile' : 'Join',
+                  label: appText(VolunteerAuthService.hasSession ? 'Profile' : 'Join'),
                   selected: _selectedTab == 3,
                   onTap: _openVolunteerLogin,
                 ),
