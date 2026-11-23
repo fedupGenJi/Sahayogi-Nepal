@@ -35,7 +35,7 @@ React + Vite + TypeScript (admin) · Valhalla routing (via the `get-route` funct
 | `supabase/functions/`  | Edge Functions (`submit-request`, `*-login`, `approve-volunteer`, `get-route`, ...)    |
 | `supabase/seeds/`      | `nepal_districts.sql` (77 districts with polygons, idempotent)                               |
 | `scripts/`             | Demo seeding and reset (`seed_demo.mjs`, `seed_extra.mjs`, `reset_demo_remote.mjs`, ...) |
-| `web/set-password/`    | Static page volunteers use to set or reset their password                                      |
+| `apps/admin/set-password/` | Admin app page volunteers use to set or reset their password                              |
 | `postman/`             | Postman collection and local environment                                                       |
 | `docs/`                | API contract, auth API, ownership, seeding guide, test matrix, changelog                       |
 

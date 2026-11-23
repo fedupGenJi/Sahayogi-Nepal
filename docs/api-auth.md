@@ -312,10 +312,10 @@ There are two separate ways to end up with a password:
 
 | Situation                                   | How                                                                                      |
 | ------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| First time, after an admin approved you     | Email with a **Set my password** link → web page `web/set-password/` (unchanged)         |
+| First time, after an admin approved you     | Email with a **Set my password** link → admin app page `/set-password/`                   |
 | Forgot password, or the invite link expired | **Email OTP**: `request-password-reset` → `verify-reset-otp` → `reset-password` (below)   |
 
-The web page does both: link first, and if there is no valid link it shows the email → code → new-password steps. Flutter and the admin web can call the three endpoints directly.
+The admin app's set-password page handles both paths: invite link first, then email → code → new password if the link is missing or expired. Flutter and the admin web can call the three endpoints directly.
 
 ```
 request-password-reset  ->  verify-reset-otp  ->  reset-password

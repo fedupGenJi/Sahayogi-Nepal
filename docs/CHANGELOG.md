@@ -145,7 +145,7 @@ Newest first. Anything that changes a payload, table, function or seed behaviour
 - **Behaviour:** `reset-password` also confirms the email, so a volunteer whose invite link expired can set a first password this way. The invite link flow for newly approved volunteers is unchanged.
 - **Email delivery:** OTP emails go out through Gmail SMTP from the functions (`GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD` in `supabase/functions/.env`). New optional vars `OTP_PEPPER`, `MAIL_FROM_NAME`, `OTP_DEV_LOG` (local only: prints the code in the `functions serve` terminal).
 - **Config:** four new functions listed in `config.toml` with `verify_jwt = false`.
-- **Web:** `web/set-password` now offers email, code, new password when there is no valid link (replaces "Send me a new link").
+- **Web:** the admin app's `/set-password/` page offers email, code, and a new password when there is no valid invite link.
 - **Docs/Postman:** `api-auth.md` v2, new Postman requests under Auth and Volunteer application, new rows in the test matrix.
 - **Known:** Flutter `volunteer_login_screen.dart` still shows "Password reset is not connected yet" and the registration screen does not send the token. Both are Person 1 work against this contract. `create-upload-urls` is still open to anyone (IP-throttled), not gated by the email token.
 

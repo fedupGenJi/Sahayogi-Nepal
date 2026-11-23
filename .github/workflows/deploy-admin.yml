@@ -24,10 +24,6 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-      - name: Add the volunteer set-password page
-        run: |
-          mkdir -p dist/set-password
-          cp -r ../../web/set-password/. dist/set-password/
       - uses: actions/upload-pages-artifact@v3
         with: { path: apps/admin/dist }
   deploy:
